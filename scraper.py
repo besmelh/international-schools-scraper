@@ -32,17 +32,16 @@ class Scraper:
 
         try:
             # retreive the link to the sepcific page number
-            link = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, f'//*[@id="fsEl_2214"]/div/div[3]/a[{pageNumber}]'))
+            link = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, f"//a[contains(@href,'?const_page={pageNumber}&')]"))
             )
             link.click()
             time.sleep(3)
 
             # navigate to the section where all the indivdual cells are located
-            mainList = WebDriverWait(self.driver, 10).until(
+            mainList = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="fsEl_2214"]/div'))
             )
-            
             # save all the individual cells that contain advisor info into an array
             cells = mainList.find_elements_by_class_name("fsConstituentItem")
             # for testing purposes...
@@ -68,13 +67,19 @@ class Scraper:
                 advisor.setAdv(name, title, location, email)
                 advisor.printAdv
                 print(f'Name: {name}, Title: {title}, Location: {location}, Email: {email}')
-            
-            
-        finally:
-            print(f"Page {pageNumber} done scraping.")
+            print(f"Page {pageNumber} scrape succeeded.")
+            return 1
+        except:
+            print(f"Page {pageNumber} scrape failed.")
+            return 0
+
 
     def scrapeSource(self):
-        self.scrapePage(4)
+        pageNumber = 1
+        while ( self.scrapePage(pageNumber) == 1):
+            pageNumber = pageNumber + 1
+        
+        # self.scrapePage(2)
         print("All sources done scraping.")
         self.driver.quit()
 
