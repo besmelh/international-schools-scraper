@@ -5,9 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time  # to add timers
+import os # to set chromedriver relative path
 
 # source1 - object constructor for school advisors
-
 
 class Advisor:
     def setAdv(self, name, title, location, email):
@@ -22,10 +22,12 @@ class Advisor:
 
 class Scraper:
     def __init__(self):
-        PATH = '/Users/besmelhalshaalan/Desktop/Education/MillieGroup/project1b/chromedriver'
+        PATH = os.path.abspath("chromedriver") #access chromedriver path in this directory
         self.driver = webdriver.Chrome(PATH)
         self.driver.get("https://www.nesacenter.org/membership-directory/contacts")
     
+    def quitDriver(self):
+        self.driver.quit()
 
 
     def scrapePage(self, pageNumber):
@@ -79,11 +81,11 @@ class Scraper:
         while ( self.scrapePage(pageNumber) == 1):
             pageNumber = pageNumber + 1
         
-        # self.scrapePage(2)
-        print("All sources done scraping.")
-        self.driver.quit()
+        print("All the source's pages have been scraped.")
 
 
-#Main function calls ***************************
+# Main function calls ***************************
 scraper = Scraper()
-scraper.scrapeSource()
+# scraper.scrapeSource()
+scraper.scrapePage(2)
+scraper.quitDriver()
