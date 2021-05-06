@@ -118,7 +118,8 @@ class Scraper_NESA:
 
     # scrape the page with the specified page number
     def scrapePage(self, pageNumber):
-        try:
+        try:   
+
             # retreive the link to the sepcific page number
             link = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, f"//a[contains(@href,'?const_page={pageNumber}&')]"))

@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys # in order to be able to hit key
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import ActionChains
 import time  # to add timers
 import os # to set chromedriver relative path
 
@@ -69,7 +70,7 @@ class Scraper_ISD:
     def __init__(self):
         PATH = os.path.abspath("chromedriver") #access chromedriver path in this directory
         self.driver = webdriver.Chrome(PATH)
-        self.driver.get("https://www.international-schools-database.com/in/lucerne?filter=on")
+        self.driver.get("https://www.international-schools-database.com/")
         self.allSchools = list()
     
      # quit webdriver
@@ -80,8 +81,24 @@ class Scraper_ISD:
         for sch in self.allSchools:
             sch.print_school()
     
-    def scrapePage(self):
+    def scrapePage(self, pageNumber):
+        print(f"now accessing page {pageNumber}")
         try:
+            # start from main page, and target the location drop-down menu
+            menu = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/div[2]"))
+            )
+
+            #click drop down menu    
+            menuButton = menu.find_element_by_xpath("/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/div[2]/div/button")
+            menuButton.click()
+            #click location 
+            locationButton = menu.find_element_by_xpath(f'//li[@data-original-index="{pageNumber}"]')             
+            locationButton.click()
+            #click search
+            searchButton = menu.find_element_by_xpath("/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/button")    
+            searchButton.click()
+            
             # find location of page
             thisLocation = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'span.text-secondary'))
@@ -105,8 +122,36 @@ class Scraper_ISD:
                         school.print_school()
                         self.allSchools.append(school)
                 self.print_AllSchools()
-            print(f"Page scrape succeeded.")
+            print(f"Page for #{pageNumber}: {thisLocation} scrape succeeded.")
+            self.driver.back()
+            time.sleep(3)
             return 1
         except:
             print(f"Page scrape failed.")
             return 0
+
+    # scrape all the search result pages
+    def scrapeSource(self):
+        pageNumber = 1
+        while ( self.scrapePage(pageNumber) == 1):
+            pageNumber += 1
+
+
+        # # retreive a list of all location links in the menu
+        # menu = WebDriverWait(self.driver, 5).until(
+        #         EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/div[2]"))
+        # )
+        
+        # # find ul -> li -> a
+        # locationLinks = [] 
+        # ul = menu.find_elements_by_css_selector("li")
+        # # note: not all (li)'s contain links to the locations, some are just headers in the list
+        # for li in ul:
+        #     try:
+        #         a = li.find_element_by_class_name("a") 
+        #         locationLinks.append(a)
+        
+        # for l in locationLinks:
+        #     self.scrapePage(l)
+
+        print("All the source's pages have been scraped.")
