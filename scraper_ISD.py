@@ -6,6 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time  # to add timers
 import os # to set chromedriver relative path
 
+
+
 # School Class ******************************************************************
 # object constructor for each school, contains methods to save and clean it's info
 class School:
@@ -52,7 +54,6 @@ class School:
         self.fees = fee
     
     def is_highSchool(self):
-        print(f"age: {self.ages}")
         if ("18" in self.ages):
             return 1
         else:
@@ -75,7 +76,7 @@ class Scraper_ISD:
     def quitDriver(self):
         self.driver.quit()
 
-    def printAllSchools(self):
+    def print_AllSchools(self):
         for sch in self.allSchools:
             sch.print_school()
     
@@ -102,6 +103,10 @@ class Scraper_ISD:
                 if (school.set_school_properties(cell) == 1):
                     if (school.clean_school() == 1):
                         school.print_school()
+                        self.allSchools.append(school)
+                self.print_AllSchools()
             print(f"Page scrape succeeded.")
+            return 1
         except:
             print(f"Page scrape failed.")
+            return 0

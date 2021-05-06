@@ -111,7 +111,7 @@ class Scraper_NESA:
     def quitDriver(self):
         self.driver.quit()
 
-    def printAllAdvisors(self):
+    def print_AllAdvisors(self):
         for adv in self.allAdvisors:
             adv.print_advisor()
 
