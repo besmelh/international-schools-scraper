@@ -1,6 +1,7 @@
 import csv
 
 class NESA_CSV:
+    
     #create the csv file, and write the info of all the advisors to it
     def writeFile(self, advList):
         fileName = 'NESA.csv'

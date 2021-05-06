@@ -11,11 +11,11 @@ import os # to set chromedriver relative path
 # object constructor for each school advisor, contains methods to save and clean it's info
 class Advisor:
 
-    def printAdv(self):
+    def print_advisor(self):
         print(f'Name: {self.name}, Title: {self.title}, Location: {self.location}, Email: {self.email}')
 
     #set advisor info, and return 0 if the information is not complete, else return 1
-    def setAdv(self, cell):
+    def set_advisor(self, cell):
         try:
             self.name = cell.find_element_by_class_name("fsFullName").text
         except:
@@ -39,25 +39,25 @@ class Advisor:
         return 1
     
     #clean the advisor information, return 0 if any error occurs while cleaning, that will likely mean that the info is missing
-    def cleanAdv(self):
+    def clean_advisor(self):
         try:
-            self.removeAdvAttr()
+            self.remove_attr_advisor()
             # exclude NON high schools and affilated organization
-            if (self.isHighSchool() != 1 or self.isOrganization() == 1):
+            if (self.is_highSchool() != 1 or self.is_organization() == 1):
                 return 0
-            self.cleanLocation()
+            self.clean_location()
             return 1
         except:
             return 0
 
     # remove the attribute that comes with the strings i.e. "Titles:", "Location:" 
-    def removeAdvAttr(self):
+    def remove_attr_advisor(self):
         self.title = self.title.split("Titles: ")[1]
         self.location = self.location.split("Locations: ")[1]
         self.email = self.email.split("Email: ")[1]
 
     # clean the location by removing the description of the location i.e. remove "Affiliate School" or "Member"
-    def cleanLocation(self):
+    def clean_location(self):
         loc = self.location
         descFound = 0 #if the location description exists in the location
 
@@ -82,7 +82,7 @@ class Advisor:
             self.location = loc
 
     # check if the advisor is not from a school - i.e. an Affiliat Organization
-    def isOrganization(self):
+    def is_organization(self):
         if ("Affiliate Organization" in self.location):
             return 1
         else:
@@ -90,7 +90,7 @@ class Advisor:
 
 
     # check if the advisor is for high school students
-    def isHighSchool(self):
+    def is_highSchool(self):
         if (("Elementary" in self.title) or ("Middle School" in self.title)):
             return 0
         else:
@@ -113,10 +113,10 @@ class Scraper_NESA:
 
     def printAllAdvisors(self):
         for adv in self.allAdvisors:
-            adv.printAdv()
+            adv.print_advisor()
 
 
-    # scrape the page with the specifies page number
+    # scrape the page with the specified page number
     def scrapePage(self, pageNumber):
         try:
             # retreive the link to the sepcific page number
@@ -136,8 +136,8 @@ class Scraper_NESA:
             # loop through all the advisors, set the required information, and append them to the advisors' list
             for cell in cells:
                 advisor=Advisor()
-                if (advisor.setAdv(cell) == 1):
-                    if (advisor.cleanAdv() == 1):
+                if (advisor.set_advisor(cell) == 1):
+                    if (advisor.clean_advisor() == 1):
                         self.allAdvisors.append(advisor)
 
             print(f"Page {pageNumber} scrape succeeded.")
