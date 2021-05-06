@@ -1,14 +1,14 @@
 from selenium import webdriver
-# in order to be able to hit keys like enter and esc, etc.
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.keys import Keys # in order to be able to hit keys like enter and esc, etc.
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time  # to add timers
 import os # to set chromedriver relative path
 
-# source1 - object constructor for school advisors
 
+# Advisor Class ******************************************************************
+# object constructor for each school advisor, contains methods to save and clean it's info
 class Advisor:
 
     def printAdv(self):
@@ -97,18 +97,27 @@ class Advisor:
             return 1
 
 
-class Scraper:
+# scraping class ******************************************************************
+# Contains methods to scrape through webpages
+class Scraper_NESA:
+    # initialize webdriver
     def __init__(self):
         PATH = os.path.abspath("chromedriver") #access chromedriver path in this directory
         self.driver = webdriver.Chrome(PATH)
         self.driver.get("https://www.nesacenter.org/membership-directory/contacts")
+        self.allAdvisors = list()
     
+    # quit webdriver
     def quitDriver(self):
         self.driver.quit()
 
+    def printAllAdvisors(self):
+        for adv in self.allAdvisors:
+            adv.printAdv()
 
+
+    # scrape the page with the specifies page number
     def scrapePage(self, pageNumber):
-
         try:
             # retreive the link to the sepcific page number
             link = WebDriverWait(self.driver, 5).until(
@@ -124,12 +133,12 @@ class Scraper:
             # save all the individual cells that contain advisor info into an array
             cells = mainList.find_elements_by_class_name("fsConstituentItem")
             
-            # loop through all the items, and access the required information
+            # loop through all the advisors, set the required information, and append them to the advisors' list
             for cell in cells:
                 advisor=Advisor()
                 if (advisor.setAdv(cell) == 1):
                     if (advisor.cleanAdv() == 1):
-                        advisor.printAdv()
+                        self.allAdvisors.append(advisor)
 
             print(f"Page {pageNumber} scrape succeeded.")
             return 1
@@ -137,17 +146,10 @@ class Scraper:
             print(f"Page {pageNumber} scrape failed.")
             return 0
 
-
+    # scrape all the search result pages
     def scrapeSource(self):
         pageNumber = 1
         while ( self.scrapePage(pageNumber) == 1):
-            pageNumber = pageNumber + 1
+            pageNumber += 1
         
         print("All the source's pages have been scraped.")
-
-
-# Main function calls ***************************
-scraper = Scraper()
-# scraper.scrapeSource()
-scraper.scrapePage(2)
-scraper.quitDriver()
