@@ -2,9 +2,6 @@ from scraper_NESA import *
 from scraper_ISD import *
 from dataToCsv import *
 
-# main calls *******************************************
-nesa_test()
-isd_test()
 
 def nesa_test():
     # Scrape NESA - source 1
@@ -24,3 +21,7 @@ def isd_test():
     csvISD = ISD_CSV()
     csvISD.writeFile(scraperISD.allSchools)
 
+
+# main calls *******************************************
+nesa_test()
+isd_test()

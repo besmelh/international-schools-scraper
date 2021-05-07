@@ -90,6 +90,7 @@ class Scraper_ISD:
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'span.text-secondary'))
             )
             thisLocation = thisLocation.text
+            time.sleep(2)
             # navigate to the section where all the indivdual cells are located
             mainList = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'cards-row'))
