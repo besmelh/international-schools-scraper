@@ -82,7 +82,6 @@ class Scraper_ISD:
             sch.print_school()
     
     def scrapePage(self, locationString):
-        print(f"now accessing page {locationString}")
         try:
             self.driver.get(f"https://www.international-schools-database.com/in/{locationString}?filter=on")
             # time.sleep(1)
@@ -103,13 +102,11 @@ class Scraper_ISD:
                 school.set_school_location(thisLocation)
                 if (school.set_school_properties(cell) == 1):
                     if (school.clean_school() == 1):
-                        school.print_school()
                         self.allSchools.append(school)
-                self.print_AllSchools()
             print(f"Page for {thisLocation} scrape succeeded.")
             return 1
         except:
-            print(f"Page scrape failed.")
+            print(f"Page for {thisLocation} scrape failed.")
             return 0
 
     # def find_location_links:
