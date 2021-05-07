@@ -81,38 +81,22 @@ class Scraper_ISD:
         for sch in self.allSchools:
             sch.print_school()
     
-    def scrapePage(self, pageNumber):
-        print(f"now accessing page {pageNumber}")
+    def scrapePage(self, locationString):
+        print(f"now accessing page {locationString}")
         try:
-            # start from main page, and target the location drop-down menu
-            menu = WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/div[2]"))
-            )
-
-            #click drop down menu    
-            menuButton = menu.find_element_by_xpath("/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/div[2]/div/button")
-            menuButton.click()
-            #click location 
-            locationButton = menu.find_element_by_xpath(f'//li[@data-original-index="{pageNumber}"]')             
-            locationButton.click()
-            #click search
-            searchButton = menu.find_element_by_xpath("/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/button")    
-            searchButton.click()
-            
+            self.driver.get(f"https://www.international-schools-database.com/in/{locationString}?filter=on")
+            # time.sleep(1)
             # find location of page
             thisLocation = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'span.text-secondary'))
             )
             thisLocation = thisLocation.text
-            
             # navigate to the section where all the indivdual cells are located
             mainList = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'cards-row'))
             )
-            
             # save all the individual cells that contain schools info into an array
             cells = mainList.find_elements_by_class_name("card-row-inner")
-
             # loop through all the advisors, set the required information, and append them to the advisors' list
             for cell in cells:
                 school = School()
@@ -122,36 +106,33 @@ class Scraper_ISD:
                         school.print_school()
                         self.allSchools.append(school)
                 self.print_AllSchools()
-            print(f"Page for #{pageNumber}: {thisLocation} scrape succeeded.")
-            self.driver.back()
-            time.sleep(3)
+            print(f"Page for {thisLocation} scrape succeeded.")
             return 1
         except:
             print(f"Page scrape failed.")
             return 0
 
+    # def find_location_links:
+
+
     # scrape all the search result pages
     def scrapeSource(self):
-        pageNumber = 1
-        while ( self.scrapePage(pageNumber) == 1):
-            pageNumber += 1
 
+        # retrieve all location links in the menu
+        menu = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/div[2]"))
+        )
 
-        # # retreive a list of all location links in the menu
-        # menu = WebDriverWait(self.driver, 5).until(
-        #         EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div/div/div/div[1]/div/div/div[2]/div/div/div/form/div[2]"))
-        # )
+        # fetch the strings that represent each location
+        locationLinks = menu.find_elements_by_css_selector("option")
+        locationStrings = list()
+        for l in locationLinks:
+            lString = l.get_attribute("value")
+            locationStrings.append(lString)
         
-        # # find ul -> li -> a
-        # locationLinks = [] 
-        # ul = menu.find_elements_by_css_selector("li")
-        # # note: not all (li)'s contain links to the locations, some are just headers in the list
-        # for li in ul:
-        #     try:
-        #         a = li.find_element_by_class_name("a") 
-        #         locationLinks.append(a)
-        
-        # for l in locationLinks:
-        #     self.scrapePage(l)
-
+        # use the location string to access the corresponding urls
+        for l in locationStrings:
+            if (l != ""):
+                self.scrapePage(l)
+       
         print("All the source's pages have been scraped.")
