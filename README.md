@@ -15,4 +15,8 @@ The data from ISD was cleaned based on the following criteria:
 - Remove entries from schools that don't have high school students (those from ages < 18)
 - Clean the text that represents the fees
 
-Made as a submission for Millie Group's Assesment
+To run the program:
+1. Run main.py
+2. The data results will be exported in NESA.csv & ISD.csv
+
+Made as a submission for Millie Group's Assessment
