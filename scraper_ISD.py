@@ -24,7 +24,7 @@ class School:
         # properties = [curriculum, language, ages, fees]
         properties = cell.find_elements_by_css_selector("dt")
         # check that all info is available
-        if len(properties) != 4:
+        if len(properties) < 4:
             return 0
         try:
             self.name = cell.find_element_by_class_name("school-name").text

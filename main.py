@@ -23,5 +23,5 @@ def isd_test():
 
 
 # main calls *******************************************
-nesa_test()
+# nesa_test()
 isd_test()
